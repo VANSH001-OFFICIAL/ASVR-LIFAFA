@@ -1,22 +1,23 @@
 const express = require('express');
-const { Telegraf } = require('telegraf');
 const app = express();
-app.use(express.json());
-app.use(express.static(__dirname));
+const path = require('path');
 
-const bot = new Telegraf('8332440179:AAHv_6V9hWQjd1CCTUr1CfdcNofQr1dVqPw');
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static('public'));
 
-// Transfer / Withdrawal API
-app.post('/api/transfer', async (req, res) => {
-    const { sender, recipient, amount, type } = req.body; // type: 'upi' or 'user'
-    
-    // Yahan Supabase Database Update Logic aayegi
-    
-    // Telegram Bot Notification
-    const message = `🔔 New Transaction\nFrom: ${sender}\nTo: ${recipient}\nAmount: ₹${amount}\nType: ${type}`;
-    await bot.telegram.sendMessage('YOUR_CHAT_ID', message);
-    
-    res.json({ success: true, message: "Transaction Request Sent!" });
+// Routes
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public/signup.html')));
+app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'public/login.html')));
+
+app.post('/signup', (req, res) => {
+    // Yaha database logic aayega
+    console.log(req.body);
+    res.redirect('/login');
 });
 
-app.listen(3000, () => console.log('Server running on port 3000'));
+app.post('/login', (req, res) => {
+    // Yaha authentication logic aayega
+    res.sendFile(path.join(__dirname, 'public/dashboard.html'));
+});
+
+app.listen(3000, () => console.log('Server running on http://localhost:3000'));
